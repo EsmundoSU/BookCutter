@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.421
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BookCutter.Main", "BookCutter.Main.csproj", "{BB921DED-C729-4C52-87DC-48DC948B1BB9}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{BB921DED-C729-4C52-87DC-48DC948B1BB9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BB921DED-C729-4C52-87DC-48DC948B1BB9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BB921DED-C729-4C52-87DC-48DC948B1BB9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BB921DED-C729-4C52-87DC-48DC948B1BB9}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {62548A25-C3DC-4A0A-AF61-A60843DADDA2}
+	EndGlobalSection
+EndGlobal

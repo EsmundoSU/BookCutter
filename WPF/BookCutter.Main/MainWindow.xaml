@@ -1,0 +1,191 @@
+﻿<Window x:Class="BookCutter.Main.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:BookCutter.Main"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="600" Width="800">
+    <!-- Grid - Main Window -->
+    <Grid>
+        <!-- Grid Configuration -->
+        <Grid.RowDefinitions>
+            <RowDefinition Height="150"/>
+            <RowDefinition Height="3*"/>
+        </Grid.RowDefinitions>
+        
+        <!-- Top Grid - Control Panel -->
+        <Grid>
+            
+            <!-- Top Grid Configuration -->
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="1*"/>
+                <ColumnDefinition Width="1*"/>
+                <ColumnDefinition Width="1*"/>
+                <ColumnDefinition Width="1*"/>
+                <ColumnDefinition Width="1*"/>
+                <ColumnDefinition Width="1*"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="1*"/>
+                <RowDefinition Height="1*"/>
+                <RowDefinition Height="1*"/>
+                <RowDefinition Height="1*"/>
+                <RowDefinition Height="1*"/>
+            </Grid.RowDefinitions>
+            
+            <!-- Top Grid Content -->
+            <RadioButton 
+                GroupName="PhotoModeRadioButtonGroup" 
+                Content="Single Photo" 
+                IsChecked="True"/>
+
+            <RadioButton
+                Grid.Row="1"
+                GroupName="PhotoModeRadioButtonGroup"
+                Content="Multiple Photos"/>
+
+            <Label
+                Grid.Row="2"
+                Grid.ColumnSpan="3"
+                Grid.RowSpan="2"
+                Background="Red"
+                Content="Info Label: INFO HERE..."/>
+
+            <ProgressBar
+                Grid.Row="4"
+                Grid.ColumnSpan="6"
+                Minimum="0"
+                Maximum="100"
+                Value="68"/>
+            
+            <!-- Open single photo button -->
+            <Button
+                Grid.Column="1"
+                Content="Open..."
+                Name="OpenPhotoButton"
+                Click="OpenPhotoButton_Click"/>
+
+            <Button
+                Grid.Column="1"
+                Grid.Row="1"
+                Content="Open Folder..."/>
+
+            <Button
+                Grid.Column="2"
+                Content="Save Photo"/>
+
+            <Button
+                Grid.Column="2"
+                Grid.Row="1"
+                Content="Save Photos"/>
+            
+            <!-- Temporary spacing label -->
+            <Label
+                Grid.Column="3"
+                Grid.RowSpan="4"
+                Background="AliceBlue"
+                Content="SPACING LABEL" />
+
+            <Label
+                Grid.Column="4"
+                Content="Parameters Setup:"/>
+
+            <Label
+                Grid.Column="4"
+                Grid.Row="1"
+                Content="UpTreshold:"/>
+
+            <Label
+                Grid.Column="4"
+                Grid.Row="2"
+                Content="DownTreshold:"/>
+
+            <Label
+                Grid.Column="4"
+                Grid.Row="3"
+                Content="Gaussian:"/>
+
+            <Button
+                Grid.Column="5"
+                Content="Save Parameters"/>
+
+            <!-- Upper Treshold Slider -->
+            <DockPanel 
+                VerticalAlignment="Center"
+                Grid.Column="5"
+                Grid.Row="1">
+                <TextBox 
+                    Text="{Binding ElementName=UpTresholdSlider, Path=Value, UpdateSourceTrigger=PropertyChanged}"
+                    DockPanel.Dock="Right"
+                    TextAlignment="Right"
+                    Width="40"/>
+                <Slider 
+                    Maximum="500" 
+                    Minimum="10"
+                    TickFrequency="1"
+                    Name="UpTresholdSlider"/>
+            </DockPanel>
+
+            <!-- Down Treshold Slider -->
+            <DockPanel 
+                VerticalAlignment="Center"
+                Grid.Column="5"
+                Grid.Row="2">
+                <TextBox 
+                    Text="{Binding ElementName=DownTresholdSlider, Path=Value, UpdateSourceTrigger=PropertyChanged}"
+                    DockPanel.Dock="Right"
+                    TextAlignment="Right"
+                    Width="40"/>
+                <Slider 
+                    Maximum="80" 
+                    Minimum="0"
+                    TickFrequency="1"
+                    Name="DownTresholdSlider"/>
+            </DockPanel>
+
+            <!-- Gaussian Slider -->
+            <DockPanel 
+                VerticalAlignment="Center"
+                Grid.Column="5"
+                Grid.Row="3">
+                <TextBox 
+                    Text="{Binding ElementName=GaussianSlider, Path=Value, UpdateSourceTrigger=PropertyChanged}"
+                    DockPanel.Dock="Right"
+                    TextAlignment="Right"
+                    Width="40"/>
+                <Slider 
+                    Maximum="6" 
+                    Minimum="1"
+                    TickFrequency="1"
+                    Name="GaussianSlider"/>
+            </DockPanel>
+
+        </Grid>
+        
+        <!-- Bottom Grid - Photos -->
+        <Grid Grid.Row="1">
+            <!-- Bottom Grid Configuration -->
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="1*"/>
+                <ColumnDefinition Width="1*"/>
+                <ColumnDefinition Width="1*"/>
+            </Grid.ColumnDefinitions>
+            
+            <!-- Bottom Grid Content -->
+            <Image
+                Source="D:\ape\Documents\Moje\Software\BookCutter\photos\book_1.jpg"/>
+
+            <Image
+                Grid.Column="1"
+                Source="D:\ape\Documents\Moje\Software\BookCutter\printscreens\mask.png"/>
+
+            <Image
+                Grid.Column="2"
+                Source="D:\ape\Documents\Moje\Software\BookCutter\photos\book_2.jpg"/>
+            <!-- TODO -->
+            
+            
+        </Grid>
+    </Grid>
+</Window>
