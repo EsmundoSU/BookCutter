@@ -14,7 +14,9 @@ namespace BookCutter.Main
 
         private void OpenPhotoButton_Click(object sender, RoutedEventArgs e)
         {
-            PhotoProcessing.TestFunction();
+            var photo = PhotoProcessing.TestFunction();
+            BasicPhotoImage.Source = photo;
+            
         }
     }
 }

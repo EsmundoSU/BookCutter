@@ -174,7 +174,8 @@
             
             <!-- Bottom Grid Content -->
             <Image
-                Source="D:\ape\Documents\Moje\Software\BookCutter\photos\book_1.jpg"/>
+                Source="D:\ape\Documents\Moje\Software\BookCutter\photos\book_1.jpg"
+                Name="BasicPhotoImage"/>
 
             <Image
                 Grid.Column="1"
