@@ -21,7 +21,7 @@ namespace BookCutter.Main
         /// </summary>
         /// <param name="filePath"></param>
         /// <returns></returns>
-        internal static Mat FindBookMask(string filePath)
+        internal static Mat FindBookMask(string filePath, int upTreshold)
         {
             var imgBasic = Cv2.ImRead(filePath);
             //Cv2.ImShow("Debug(CV2) - Basic Image", imgBasic);
@@ -35,7 +35,54 @@ namespace BookCutter.Main
             //Cv2.ImShow("Debug(CV2) - Gaussian", imgGaussian);
 
             var imgCanny = imgGaussian.Clone();
-            Cv2.Canny(imgGaussian, imgCanny, 150, 10);
+            Cv2.Canny(imgGaussian, imgCanny, upTreshold, 10);
+            //Cv2.ImShow("Debug(CV2) - Canny", imgCanny);
+
+            var imgClosed = imgCanny.Clone();
+            var kernel = Cv2.GetStructuringElement(MorphShapes.Rect, new OpenCvSharp.Size(7, 7));
+            Cv2.MorphologyEx(imgCanny, imgClosed, MorphTypes.Close, kernel);
+            //Cv2.ImShow("Debug(CV2) - Closed", imgClosed);
+
+            OpenCvSharp.Point[][] contours;
+            HierarchyIndex[] hierarchyIndexes;
+            Cv2.FindContours(imgClosed, out contours, out hierarchyIndexes, RetrievalModes.List, ContourApproximationModes.ApproxSimple);
+
+            var contourMaxArea = 0.0;
+            var contourMaxIndex = 0;
+            for (int i = 0; i < contours.Length; i++)
+            {
+                var contour = contours[i];
+                if (Cv2.ContourArea(contour) > contourMaxArea)
+                {
+                    contourMaxArea = Cv2.ContourArea(contour);
+                    contourMaxIndex = i;
+                }
+            }
+
+            var imgContour = (Mat)Mat.Zeros(imgClosed.Size(), MatType.CV_8UC1);
+            Cv2.DrawContours(imgContour, contours, contourMaxIndex, new Scalar(255), -1);
+            //Cv2.ImShow("Debig(CV2) - Counters", imgContour);
+
+            return imgContour;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="imgBasic"></param>
+        /// <returns></returns>
+        internal static Mat FindBookMask(Mat imgBasic, int upTreshold)
+        {
+            var imgGray = imgBasic.Clone();
+            Cv2.CvtColor(imgBasic, imgGray, ColorConversionCodes.BGR2GRAY);
+            //Cv2.ImShow("Debug(CV2) - Grey Image", imgGray);
+
+            var imgGaussian = imgGray.Clone();
+            Cv2.GaussianBlur(imgGray, imgGaussian, new OpenCvSharp.Size(3, 3), 0);
+            //Cv2.ImShow("Debug(CV2) - Gaussian", imgGaussian);
+
+            var imgCanny = imgGaussian.Clone();
+            Cv2.Canny(imgGaussian, imgCanny, upTreshold, 10);
             //Cv2.ImShow("Debug(CV2) - Canny", imgCanny);
 
             var imgClosed = imgCanny.Clone();
@@ -85,6 +132,27 @@ namespace BookCutter.Main
             }
 
             return imageBasicMat;
+        }
+
+        internal static Mat CutBookCV(string sourceImageFilePath, Mat imageMask)
+        {
+            var imageBasic = Cv2.ImRead(sourceImageFilePath);
+
+            var imageForeground = (Mat)Mat.Zeros(imageBasic.Size(), MatType.CV_8UC3);
+            Cv2.BitwiseOr(imageBasic, imageBasic, imageForeground, imageMask);
+
+            var imageInvertedMask = (Mat)Mat.Zeros(imageBasic.Size(), MatType.CV_8UC1);
+            Cv2.BitwiseNot(imageMask, imageInvertedMask);
+
+            var imgBackground = (Mat)Mat.Zeros(imageBasic.Size(), MatType.CV_8UC3);
+            Cv2.BitwiseNot(imgBackground, imgBackground);
+
+            var imgBackgroundMask = (Mat)Mat.Zeros(imageBasic.Size(), MatType.CV_8UC3);
+            Cv2.BitwiseOr(imgBackground, imgBackground, imgBackgroundMask, imageInvertedMask);
+
+            var imgFinal = (Mat)Mat.Zeros(imageBasic.Size(), MatType.CV_8UC3);
+            Cv2.BitwiseOr(imageForeground, imgBackgroundMask, imgFinal);
+            return imgFinal;
         }
 
         /// <summary>
@@ -137,7 +205,7 @@ namespace BookCutter.Main
 
             try
             {
-                ptr = Marshal.AllocHGlobal(height * width);
+                ptr = Marshal.AllocHGlobal(height * stride);
                 imageBitmapSource.CopyPixels(new Int32Rect(0, 0, width, height), ptr, height * stride, stride);
 
                 using (var btm = new Bitmap(width, height, stride, System.Drawing.Imaging.PixelFormat.Format1bppIndexed, ptr))

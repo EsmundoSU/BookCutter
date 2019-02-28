@@ -1,5 +1,6 @@
 ﻿using Microsoft.Win32;
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Windows;
@@ -32,7 +33,7 @@ namespace BookCutter.Main
                 BasicPhotoImage.Source = new BitmapImage(imageBasicUri);
 
                 // Convert and load mask of photo
-                var imageMaskMat = PhotoProcessing.FindBookMask(openFileDialog.FileName);
+                var imageMaskMat = PhotoProcessing.FindBookMask(openFileDialog.FileName, 150);
                 MaskPhotoImage.Source = PhotoProcessing.MatToImageSource(imageMaskMat);
 
                 // Cut mask form original photo
@@ -88,7 +89,7 @@ namespace BookCutter.Main
                     BasicPhotoImage.Source = new BitmapImage(imageBasicUri);
 
                     // Convert and load mask of photo
-                    var imageMaskMat = PhotoProcessing.FindBookMask(photoPath);
+                    var imageMaskMat = PhotoProcessing.FindBookMask(photoPath, 150);
                     MaskPhotoImage.Source = PhotoProcessing.MatToImageSource(imageMaskMat);
 
                     // Cut mask form original photo
@@ -107,7 +108,19 @@ namespace BookCutter.Main
         {
             if(BasicPhotoImage.Source != null)
             {
-                var basicImage = BasicPhotoImage.Source;
+                var basicImageImageSource = BasicPhotoImage.Source;
+                var basicImageUri = new Uri(basicImageImageSource.ToString());
+                var basicImagePath = basicImageUri.AbsolutePath;
+
+                Debug.Write("Sciezka zdjecia:");
+                Debug.WriteLine(basicImagePath);
+
+                //var basicImageMat = PhotoProcessing.ImageSourceToMat(basicImageImageSource);
+                var maskImageMat = PhotoProcessing.FindBookMask(basicImagePath, (int)e.NewValue);
+                MaskPhotoImage.Source = PhotoProcessing.MatToImageSource(maskImageMat);
+
+                var imageCutted = PhotoProcessing.CutBookCV(basicImagePath, maskImageMat);
+                CuttedPhotoImage.Source = PhotoProcessing.MatToImageSource(imageCutted);
             }
         }
     }
