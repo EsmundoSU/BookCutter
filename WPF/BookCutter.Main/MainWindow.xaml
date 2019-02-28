@@ -128,10 +128,12 @@
                     TextAlignment="Right"
                     Width="40"/>
                 <Slider 
+                    Name="UpTresholdSlider"
                     Maximum="500" 
-                    Minimum="10"
+                    Minimum="0"
                     TickFrequency="1"
-                    Name="UpTresholdSlider"/>
+                    IsSnapToTickEnabled="True"
+                    ValueChanged="UpTresholdSlider_ValueChanged"/>
             </DockPanel>
 
             <!-- Down Treshold Slider -->
@@ -163,7 +165,7 @@
                     Width="40"/>
                 <Slider 
                     Maximum="6" 
-                    Minimum="1"
+                    Minimum="0"
                     TickFrequency="1"
                     Name="GaussianSlider"/>
             </DockPanel>

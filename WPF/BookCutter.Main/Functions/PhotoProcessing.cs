@@ -66,6 +66,12 @@ namespace BookCutter.Main
             return imgContour;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sourceImageFilePath"></param>
+        /// <param name="imageMaskMat"></param>
+        /// <returns></returns>
         internal static Mat CutBook(string sourceImageFilePath, Mat imageMaskMat)
         {
             var imageBasicMat = Cv2.ImRead(sourceImageFilePath);
@@ -119,12 +125,58 @@ namespace BookCutter.Main
         /// <summary>
         /// 
         /// </summary>
+        /// <param name="imageImageSource"></param>
+        /// <returns></returns>
+        internal static Bitmap ImageSourceToBitmap(ImageSource imageImageSource)
+        {
+            var imageBitmapSource = (BitmapSource)imageImageSource;
+            var width = imageBitmapSource.PixelWidth;
+            var height = imageBitmapSource.PixelHeight;
+            var stride = width * ((imageBitmapSource.Format.BitsPerPixel + 7) / 8);
+            var ptr = IntPtr.Zero;
+
+            try
+            {
+                ptr = Marshal.AllocHGlobal(height * width);
+                imageBitmapSource.CopyPixels(new Int32Rect(0, 0, width, height), ptr, height * stride, stride);
+
+                using (var btm = new Bitmap(width, height, stride, System.Drawing.Imaging.PixelFormat.Format1bppIndexed, ptr))
+                {
+                    return new Bitmap(btm);
+                }
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+            finally
+            {
+                if (ptr != IntPtr.Zero)
+                    Marshal.FreeHGlobal(ptr);
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
         /// <param name="imageMat"></param>
         /// <returns></returns>
         internal static ImageSource MatToImageSource(Mat imageMat)
         {
             var imgBitmap = MatToBitmap(imageMat);
             return BitmapToImageSource(imgBitmap);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="imageImageSource"></param>
+        /// <returns></returns>
+        internal static Mat ImageSourceToMat(ImageSource imageImageSource)
+        {
+            var imageBitmap = ImageSourceToBitmap(imageImageSource);
+            return BitmapToMat(imageBitmap);
         }
 
     }

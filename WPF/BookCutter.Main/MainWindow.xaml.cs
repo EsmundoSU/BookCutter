@@ -55,6 +55,11 @@ namespace BookCutter.Main
             SavePhotosButton.IsEnabled = false;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void MultiplePhotosRadiobutton_Click(object sender, RoutedEventArgs e)
         {
             OpenPhotoButton.IsEnabled = false;
@@ -64,6 +69,11 @@ namespace BookCutter.Main
             SavePhotosButton.IsEnabled = true;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void OpenFolderButton_Click(object sender, RoutedEventArgs e)
         {
             var openFolderDialog = new System.Windows.Forms.FolderBrowserDialog();
@@ -85,6 +95,19 @@ namespace BookCutter.Main
                     var imageCutted = PhotoProcessing.CutBook(photoPath, imageMaskMat);
                     CuttedPhotoImage.Source = PhotoProcessing.MatToImageSource(imageCutted);
                 }
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void UpTresholdSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            if(BasicPhotoImage.Source != null)
+            {
+                var basicImage = BasicPhotoImage.Source;
             }
         }
     }
