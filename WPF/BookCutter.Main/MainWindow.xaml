@@ -37,13 +37,17 @@
             <!-- Top Grid Content -->
             <RadioButton 
                 GroupName="PhotoModeRadioButtonGroup" 
+                Name="SinglePhotoRadioButton"
                 Content="Single Photo" 
-                IsChecked="True"/>
+                IsChecked="True"
+                Click="SinglePhotoRadioButton_Click"/>
 
             <RadioButton
                 Grid.Row="1"
                 GroupName="PhotoModeRadioButtonGroup"
-                Content="Multiple Photos"/>
+                Content="Multiple Photos"
+                Name="MultiplePhotosRadiobutton"
+                Click="MultiplePhotosRadiobutton_Click"/>
 
             <Label
                 Grid.Row="2"
@@ -69,16 +73,19 @@
             <Button
                 Grid.Column="1"
                 Grid.Row="1"
-                Content="Open Folder..."/>
+                Content="Open Folder..."
+                Name="OpenFolderButton" Click="OpenFolderButton_Click"/>
 
             <Button
                 Grid.Column="2"
-                Content="Save Photo"/>
+                Content="Save Photo"
+                Name="SavePhotoButton"/>
 
             <Button
                 Grid.Column="2"
                 Grid.Row="1"
-                Content="Save Photos"/>
+                Content="Save Photos"
+                Name="SavePhotosButton"/>
             
             <!-- Temporary spacing label -->
             <Label
@@ -179,11 +186,13 @@
 
             <Image
                 Grid.Column="1"
-                Source="D:\ape\Documents\Moje\Software\BookCutter\printscreens\mask.png"/>
+                Source="D:\ape\Documents\Moje\Software\BookCutter\printscreens\mask.png"
+                Name="MaskPhotoImage"/>
 
             <Image
                 Grid.Column="2"
-                Source="D:\ape\Documents\Moje\Software\BookCutter\photos\book_2.jpg"/>
+                Source="D:\ape\Documents\Moje\Software\BookCutter\photos\book_2.jpg"
+                Name="CuttedPhotoImage"/>
             <!-- TODO -->
             
             

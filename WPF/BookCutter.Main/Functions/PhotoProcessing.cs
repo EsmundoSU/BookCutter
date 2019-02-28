@@ -1,100 +1,130 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Drawing;
+using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Interop;
+using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using Emgu.CV;
-using Emgu.CV.CvEnum;
-using Emgu.CV.Structure;
-using Emgu.CV.Util;
-using Microsoft.Win32;
+using OpenCvSharp;
 
 namespace BookCutter.Main
 {
     internal static class PhotoProcessing
     {
-        [System.Runtime.InteropServices.DllImport("gdi32.dll")]
-        public static extern bool DeleteObject(IntPtr hObject);
+        //If you get 'dllimport unknown'-, then add 'using System.Runtime.InteropServices;'
+        [DllImport("gdi32.dll", EntryPoint = "DeleteObject")]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        internal static extern bool DeleteObject([In] IntPtr hObject);
 
         /// <summary>
-        /// Method to convert Bitmap to BitmapImage
+        /// 
         /// </summary>
-        /// <param name="bitmap"></param>
+        /// <param name="filePath"></param>
         /// <returns></returns>
-        private static BitmapImage Bitmap2BitmapImage(Bitmap bitmap)
+        internal static Mat FindBookMask(string filePath)
         {
-            IntPtr hBitmap = bitmap.GetHbitmap();
-            BitmapImage retval;
+            var imgBasic = Cv2.ImRead(filePath);
+            //Cv2.ImShow("Debug(CV2) - Basic Image", imgBasic);
 
-            try
+            var imgGray = imgBasic.Clone();
+            Cv2.CvtColor(imgBasic, imgGray, ColorConversionCodes.BGR2GRAY);
+            //Cv2.ImShow("Debug(CV2) - Grey Image", imgGray);
+
+            var imgGaussian = imgGray.Clone();
+            Cv2.GaussianBlur(imgGray, imgGaussian, new OpenCvSharp.Size(3, 3), 0);
+            //Cv2.ImShow("Debug(CV2) - Gaussian", imgGaussian);
+
+            var imgCanny = imgGaussian.Clone();
+            Cv2.Canny(imgGaussian, imgCanny, 150, 10);
+            //Cv2.ImShow("Debug(CV2) - Canny", imgCanny);
+
+            var imgClosed = imgCanny.Clone();
+            var kernel = Cv2.GetStructuringElement(MorphShapes.Rect, new OpenCvSharp.Size(7, 7));
+            Cv2.MorphologyEx(imgCanny, imgClosed, MorphTypes.Close, kernel);
+            //Cv2.ImShow("Debug(CV2) - Closed", imgClosed);
+
+            OpenCvSharp.Point[][] contours;
+            HierarchyIndex[] hierarchyIndexes;
+            Cv2.FindContours(imgClosed, out contours, out hierarchyIndexes, RetrievalModes.List, ContourApproximationModes.ApproxSimple);
+
+            var contourMaxArea = 0.0;
+            var contourMaxIndex = 0;
+            for (int i = 0; i < contours.Length; i++)
             {
-                retval = (BitmapImage)Imaging.CreateBitmapSourceFromHBitmap(
-                    hBitmap,
-                    IntPtr.Zero,
-                    Int32Rect.Empty,
-                    BitmapSizeOptions.FromEmptyOptions());
-            }
-            finally
-            {
-                DeleteObject(hBitmap);
+                var contour = contours[i];
+                if (Cv2.ContourArea(contour) > contourMaxArea)
+                {
+                    contourMaxArea = Cv2.ContourArea(contour);
+                    contourMaxIndex = i;
+                }
             }
 
-            return retval;
+            var imgContour = (Mat)Mat.Zeros(imgClosed.Size(), MatType.CV_8UC1);
+            Cv2.DrawContours(imgContour, contours, contourMaxIndex, new Scalar(255), -1);
+            //Cv2.ImShow("Debig(CV2) - Counters", imgContour);
+
+            return imgContour;
         }
 
-        internal static BitmapImage TestFunction()
+        internal static Mat CutBook(string sourceImageFilePath, Mat imageMaskMat)
         {
-            BitmapImage myPicture2 = new BitmapImage();
-
-            OpenFileDialog openFileDialog = new OpenFileDialog();
-            if(openFileDialog.ShowDialog() == true)
-            { 
-                var uri = new Uri(openFileDialog.FileName);
-                myPicture2 = new BitmapImage(uri);
-
-                var img = CvInvoke.Imread(openFileDialog.FileName);
-                CvInvoke.Imshow("Debug - Basic Image", img);
-
-                var imgGray = img.Clone();
-                CvInvoke.CvtColor(img, imgGray, ColorConversion.Bgr2Gray);
-                CvInvoke.Imshow("Debug - Grey", imgGray);
-
-                var imgGaussian = img.Clone();
-                var gaussianSize = new System.Drawing.Size(3, 3);
-                CvInvoke.GaussianBlur(imgGray, imgGaussian, gaussianSize, 0);
-                CvInvoke.Imshow("Debug - Gaussian", imgGaussian);
-
-                var imgCanny = img.Clone();
-                CvInvoke.Canny(imgGaussian, imgCanny, 150, 10);
-                CvInvoke.Imshow("Debug - Canny", imgCanny);
-
-                var elementSize = new System.Drawing.Size(7, 7);
-                var elementAnchor = new System.Drawing.Point(-1, -1);
-                var kernel = CvInvoke.GetStructuringElement(ElementShape.Rectangle, elementSize, elementAnchor);
-                var imgClosed = img.Clone();
-                CvInvoke.MorphologyEx(imgCanny, imgClosed, MorphOp.Close, kernel, elementAnchor, 1, BorderType.Constant, new MCvScalar() );
-                CvInvoke.Imshow("Debug - Closed", imgClosed);
-
-                VectorOfVectorOfPoint contours = new VectorOfVectorOfPoint();
-                CvInvoke.FindContours(imgClosed, contours, null, RetrType.List, ChainApproxMethod.ChainApproxSimple);
-
-
-                // TODO: Znalezienie najwiekszej kontury zdjecia
-                var contoursArray = contours.ToArrayOfArray();
-                foreach (var contourArray in contoursArray)
+            var imageBasicMat = Cv2.ImRead(sourceImageFilePath);
+            for (int i = 0; i < imageBasicMat.Cols; i++)
+            {
+                for (int j = 0; j < imageBasicMat.Rows; j++)
                 {
-                    Debug.Write("Dlugosc elementu: ");
-                    Debug.WriteLine(contourArray.Length);
+                    if (imageMaskMat.At<Vec3b>(j, i)[0] == 0)
+                        imageBasicMat.Set(j, i, new Vec3b(255, 255, 255));
                 }
-
-                var imgMask = imgClosed.Clone();
-                CvInvoke.DrawContours(imgMask, contours, 0, new MCvScalar(255, 0, 0));
-                CvInvoke.Imshow("Debug - Mask", imgMask);
-                
             }
 
-            return myPicture2;
+            return imageBasicMat;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="imageMat"></param>
+        /// <returns></returns>
+        internal static Bitmap MatToBitmap(Mat imageMat)
+        {
+            return OpenCvSharp.Extensions.BitmapConverter.ToBitmap(imageMat);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="imageBitmap"></param>
+        /// <returns></returns>
+        internal static Mat BitmapToMat(Bitmap imageBitmap)
+        {
+            return OpenCvSharp.Extensions.BitmapConverter.ToMat(imageBitmap);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="bmp"></param>
+        /// <returns></returns>
+        internal static ImageSource BitmapToImageSource(Bitmap bmp)
+        {
+            var handle = bmp.GetHbitmap();
+            try
+            {
+                return Imaging.CreateBitmapSourceFromHBitmap(handle, IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
+            }
+            finally { DeleteObject(handle); }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="imageMat"></param>
+        /// <returns></returns>
+        internal static ImageSource MatToImageSource(Mat imageMat)
+        {
+            var imgBitmap = MatToBitmap(imageMat);
+            return BitmapToImageSource(imgBitmap);
         }
 
     }
