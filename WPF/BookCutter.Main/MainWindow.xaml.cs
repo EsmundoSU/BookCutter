@@ -17,6 +17,11 @@ namespace BookCutter.Main
         {
             InitializeComponent();
             SettingsManager.ReadAllSettings();
+            SettingsManager.AddUpdateAppSettings("Moje ustawienie1", "Adam Pelc");
+            SettingsManager.ReadAllSettings();
+            SettingsManager.AddUpdateAppSettings("Moje ustawienie2", "Adam Pelc3");
+            SettingsManager.AddUpdateAppSettings("Moje ustawienie3", "Adam Pelc4");
+            SettingsManager.ReadAllSettings();
         }
 
         /// <summary>
