@@ -21,7 +21,7 @@ namespace BookCutter.Main
         /// </summary>
         /// <param name="filePath"></param>
         /// <returns></returns>
-        internal static Mat FindBookMask(string filePath, int upTreshold)
+        internal static Mat FindBookMask(string filePath, int upTreshold, int downTreshold, int gaussianSize)
         {
             var imgBasic = Cv2.ImRead(filePath);
             //Cv2.ImShow("Debug(CV2) - Basic Image", imgBasic);
@@ -31,11 +31,11 @@ namespace BookCutter.Main
             //Cv2.ImShow("Debug(CV2) - Grey Image", imgGray);
 
             var imgGaussian = imgGray.Clone();
-            Cv2.GaussianBlur(imgGray, imgGaussian, new OpenCvSharp.Size(3, 3), 0);
+            Cv2.GaussianBlur(imgGray, imgGaussian, new OpenCvSharp.Size(gaussianSize, gaussianSize), 0);
             //Cv2.ImShow("Debug(CV2) - Gaussian", imgGaussian);
 
             var imgCanny = imgGaussian.Clone();
-            Cv2.Canny(imgGaussian, imgCanny, upTreshold, 10);
+            Cv2.Canny(imgGaussian, imgCanny, upTreshold, downTreshold);
             //Cv2.ImShow("Debug(CV2) - Canny", imgCanny);
 
             var imgClosed = imgCanny.Clone();

@@ -131,6 +131,7 @@
                     Name="UpTresholdSlider"
                     Maximum="500" 
                     Minimum="0"
+                    Value="150"
                     TickFrequency="1"
                     IsSnapToTickEnabled="True"
                     ValueChanged="UpTresholdSlider_ValueChanged"/>
@@ -147,10 +148,13 @@
                     TextAlignment="Right"
                     Width="40"/>
                 <Slider 
+                    Name="DownTresholdSlider"
                     Maximum="80" 
                     Minimum="0"
+                    Value="20"
                     TickFrequency="1"
-                    Name="DownTresholdSlider"/>
+                    IsSnapToTickEnabled="True"
+                    ValueChanged="DownTresholdSlider_ValueChanged"/>
             </DockPanel>
 
             <!-- Gaussian Slider -->
@@ -164,10 +168,13 @@
                     TextAlignment="Right"
                     Width="40"/>
                 <Slider 
-                    Maximum="6" 
-                    Minimum="0"
-                    TickFrequency="1"
-                    Name="GaussianSlider"/>
+                    Name="GaussianSlider"
+                    Maximum="9" 
+                    Minimum="1"
+                    Value="3"
+                    TickFrequency="2"
+                    IsSnapToTickEnabled="True"
+                    ValueChanged="GaussianSlider_ValueChanged"/>
             </DockPanel>
 
         </Grid>

@@ -33,7 +33,7 @@ namespace BookCutter.Main
                 BasicPhotoImage.Source = new BitmapImage(imageBasicUri);
 
                 // Convert and load mask of photo
-                var imageMaskMat = PhotoProcessing.FindBookMask(openFileDialog.FileName, 150);
+                var imageMaskMat = PhotoProcessing.FindBookMask(openFileDialog.FileName, (int)UpTresholdSlider.Value, (int)DownTresholdSlider.Value, (int)GaussianSlider.Value);
                 MaskPhotoImage.Source = PhotoProcessing.MatToImageSource(imageMaskMat);
 
                 // Cut mask form original photo
@@ -89,7 +89,7 @@ namespace BookCutter.Main
                     BasicPhotoImage.Source = new BitmapImage(imageBasicUri);
 
                     // Convert and load mask of photo
-                    var imageMaskMat = PhotoProcessing.FindBookMask(photoPath, 150);
+                    var imageMaskMat = PhotoProcessing.FindBookMask(photoPath, (int)UpTresholdSlider.Value, (int)DownTresholdSlider.Value, (int)GaussianSlider.Value);
                     MaskPhotoImage.Source = PhotoProcessing.MatToImageSource(imageMaskMat);
 
                     // Cut mask form original photo
@@ -106,17 +106,55 @@ namespace BookCutter.Main
         /// <param name="e"></param>
         private void UpTresholdSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
-            if(BasicPhotoImage.Source != null)
+            if(BasicPhotoImage != null)
             {
                 var basicImageImageSource = BasicPhotoImage.Source;
                 var basicImageUri = new Uri(basicImageImageSource.ToString());
                 var basicImagePath = basicImageUri.AbsolutePath;
 
-                Debug.Write("Sciezka zdjecia:");
-                Debug.WriteLine(basicImagePath);
+                var downTresholdValue = (int)DownTresholdSlider.Value;
+                var gaussianSizeValue = (int)GaussianSlider.Value;
 
-                //var basicImageMat = PhotoProcessing.ImageSourceToMat(basicImageImageSource);
-                var maskImageMat = PhotoProcessing.FindBookMask(basicImagePath, (int)e.NewValue);
+
+                var maskImageMat = PhotoProcessing.FindBookMask(basicImagePath, (int)e.NewValue, downTresholdValue, gaussianSizeValue);
+                MaskPhotoImage.Source = PhotoProcessing.MatToImageSource(maskImageMat);
+
+                var imageCutted = PhotoProcessing.CutBookCV(basicImagePath, maskImageMat);
+                CuttedPhotoImage.Source = PhotoProcessing.MatToImageSource(imageCutted);
+            }
+        }
+
+        private void DownTresholdSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            if (BasicPhotoImage != null)
+            {
+                var basicImageImageSource = BasicPhotoImage.Source;
+                var basicImageUri = new Uri(basicImageImageSource.ToString());
+                var basicImagePath = basicImageUri.AbsolutePath;
+
+                var upTresholdValue = (int)UpTresholdSlider.Value;
+                var gaussianSizeValue = (int)GaussianSlider.Value;
+
+                var maskImageMat = PhotoProcessing.FindBookMask(basicImagePath, upTresholdValue, (int)e.NewValue, gaussianSizeValue);
+                MaskPhotoImage.Source = PhotoProcessing.MatToImageSource(maskImageMat);
+
+                var imageCutted = PhotoProcessing.CutBookCV(basicImagePath, maskImageMat);
+                CuttedPhotoImage.Source = PhotoProcessing.MatToImageSource(imageCutted);
+            }
+        }
+
+        private void GaussianSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            if (BasicPhotoImage != null)
+            {
+                var basicImageImageSource = BasicPhotoImage.Source;
+                var basicImageUri = new Uri(basicImageImageSource.ToString());
+                var basicImagePath = basicImageUri.AbsolutePath;
+
+                var upTresholdValue = (int)UpTresholdSlider.Value;
+                var downTresholdValue = (int)DownTresholdSlider.Value;
+
+                var maskImageMat = PhotoProcessing.FindBookMask(basicImagePath, upTresholdValue, downTresholdValue, (int)e.NewValue);
                 MaskPhotoImage.Source = PhotoProcessing.MatToImageSource(maskImageMat);
 
                 var imageCutted = PhotoProcessing.CutBookCV(basicImagePath, maskImageMat);
