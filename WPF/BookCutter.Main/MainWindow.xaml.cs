@@ -16,6 +16,7 @@ namespace BookCutter.Main
         public MainWindow()
         {
             InitializeComponent();
+            SettingsManager.ReadAllSettings();
         }
 
         /// <summary>
@@ -160,6 +161,12 @@ namespace BookCutter.Main
                 var imageCutted = PhotoProcessing.CutBookCV(basicImagePath, maskImageMat);
                 CuttedPhotoImage.Source = PhotoProcessing.MatToImageSource(imageCutted);
             }
+        }
+
+        private void SavePhotoButton_Click(object sender, RoutedEventArgs e)
+        {
+            var saveFileDialog = new SaveFileDialog();
+            saveFileDialog.ShowDialog();
         }
     }
 }
