@@ -1,13 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace BookCutter.Main
+﻿namespace BookCutter.Main
 {
-    public class ImageParametersModel
+    public class SettingsModel
     {
+        /// <summary>
+        /// Indicaties if program load multiple or one photo
+        /// </summary>
+        public PhotoModeLoad PhotoModeLoad { get; set; }
+
         /// <summary>
         /// Select which color scale photo should be processed with
         /// </summary>
@@ -32,6 +31,5 @@ namespace BookCutter.Main
         /// Gaussian rectangle matrix size
         /// </summary>
         public int GaussianMatrixSize { get; set; }
-
     }
 }

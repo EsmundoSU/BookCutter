@@ -88,6 +88,13 @@ namespace BookCutter.Main
             return imgContour;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sourceImageFilePath"></param>
+        /// <param name="imageMask"></param>
+        /// <param name="antialiasing"></param>
+        /// <returns></returns>
         internal static Mat CutBookCV(string sourceImageFilePath, Mat imageMask, bool antialiasing = false)
         {
             var imageBasic = Cv2.ImRead(sourceImageFilePath);

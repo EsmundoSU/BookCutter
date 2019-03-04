@@ -12,5 +12,10 @@ namespace BookCutter.Main
         /// Global access to photos from app scope
         /// </summary>
         public List<ImageModel> Photos { get; set; }
+
+        /// <summary>
+        /// Global access to app setting from app scope
+        /// </summary>
+        public SettingsModel Settings { get; set; }
     }
 }

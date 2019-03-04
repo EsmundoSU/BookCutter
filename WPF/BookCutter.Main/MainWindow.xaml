@@ -246,6 +246,7 @@
             <Button
                 Name="LeftArrowButton"
                 Content=" &lt; "
+                IsEnabled="False"
                 Width="50"
                 FontSize="20"
                 FontWeight="Bold"/>
@@ -273,6 +274,7 @@
             <Button
                 Name="RightArrowButton"
                 Content=" &gt; "
+                IsEnabled="False"
                 Width="50"
                 FontSize="20"
                 FontWeight="Bold"/>

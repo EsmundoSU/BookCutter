@@ -9,36 +9,6 @@ namespace BookCutter.Main
         /// <summary>
         /// 
         /// </summary>
-        public static string MaskColorKey { get { return "MaskColor"; } }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        public static string AntiAliasingKey { get { return "AntiAliasing"; } }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        public static string UpTresholdKey { get { return "UpTreshold"; } }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        public static string DownTresholdKey { get { return "DownTreshold"; } }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        public static string GaussianSizeKey { get { return "GaussianSize"; } }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        public static string PhotoModeLoadKey { get { return "PhotoModeLoad"; } }
-
-        /// <summary>
-        /// 
-        /// </summary>
         public static void ReadAllSettings()
         {
             try

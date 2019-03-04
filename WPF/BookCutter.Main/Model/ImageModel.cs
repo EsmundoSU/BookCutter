@@ -13,10 +13,5 @@ namespace BookCutter.Main
         /// Store image path
         /// </summary>
         public string ImagePath { get; set; }
-
-        /// <summary>
-        /// Store parameters for that photo
-        /// </summary>
-        public ImageParametersModel ImageParameters { get; set; }
     }
 }
