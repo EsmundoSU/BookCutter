@@ -12,6 +12,7 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="150"/>
             <RowDefinition Height="3*"/>
+            <RowDefinition Height="50"/>
         </Grid.RowDefinitions>
         
         <!-- Top Grid - Control Panel -->
@@ -38,16 +39,15 @@
             <RadioButton 
                 GroupName="PhotoModeRadioButtonGroup" 
                 Name="SinglePhotoRadioButton"
-                Content="Single Photo" 
-                IsChecked="True"
-                Click="SinglePhotoRadioButton_Click"/>
+                Content="Single Photo"
+                Click="PhotoModeRadioButton_Click"/>
 
             <RadioButton
                 Grid.Row="1"
                 GroupName="PhotoModeRadioButtonGroup"
                 Content="Multiple Photos"
                 Name="MultiplePhotosRadiobutton"
-                Click="MultiplePhotosRadiobutton_Click"/>
+                Click="PhotoModeRadioButton_Click"/>
 
             <Label
                 Grid.Row="2"
@@ -105,7 +105,6 @@
                     GroupName="MaskColorRadioButtonGroup"
                     Name="GrayMaskRadioButton"
                     Content="Gray scale"
-                    IsChecked="True"
                     Checked="RadioButton_Checked"/>
 
                 <!-- Red Scale RadioButton -->
@@ -168,7 +167,6 @@
                     Name="UpTresholdSlider"
                     Maximum="500" 
                     Minimum="0"
-                    Value="150"
                     TickFrequency="1"
                     IsSnapToTickEnabled="True"
                     ValueChanged="UpTresholdSlider_ValueChanged"/>
@@ -188,7 +186,6 @@
                     Name="DownTresholdSlider"
                     Maximum="80" 
                     Minimum="0"
-                    Value="20"
                     TickFrequency="1"
                     IsSnapToTickEnabled="True"
                     ValueChanged="DownTresholdSlider_ValueChanged"/>
@@ -208,7 +205,6 @@
                     Name="GaussianSlider"
                     Maximum="9" 
                     Minimum="1"
-                    Value="3"
                     TickFrequency="2"
                     IsSnapToTickEnabled="True"
                     ValueChanged="GaussianSlider_ValueChanged"/>
@@ -242,5 +238,46 @@
             <!-- TODO -->
             
         </Grid>
+        <StackPanel
+            Orientation="Horizontal"
+            Grid.Row="2"
+            HorizontalAlignment="Center">
+
+            <Button
+                Name="LeftArrowButton"
+                Content=" &lt; "
+                Width="50"
+                FontSize="20"
+                FontWeight="Bold"/>
+
+            <Label
+                Name="CurrentPhotoPageLabel"
+                Content=" 0 "
+                VerticalAlignment="Center"
+                HorizontalAlignment="Center"
+                FontSize="20"/>
+
+            <Label
+                Content="/"
+                VerticalAlignment="Center"
+                HorizontalAlignment="Center"
+                FontSize="20"/>
+
+            <Label
+                Name="AllPhotosPagesLabel"
+                Content=" 0 "
+                VerticalAlignment="Center"
+                HorizontalAlignment="Center"
+                FontSize="20"/>
+
+            <Button
+                Name="RightArrowButton"
+                Content=" &gt; "
+                Width="50"
+                FontSize="20"
+                FontWeight="Bold"/>
+
+
+        </StackPanel>
     </Grid>
 </Window>

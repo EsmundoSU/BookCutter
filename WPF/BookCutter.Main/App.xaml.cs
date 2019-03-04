@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Data;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using System.Windows;
 
 namespace BookCutter.Main
@@ -13,5 +8,9 @@ namespace BookCutter.Main
     /// </summary>
     public partial class App : Application
     {
+        /// <summary>
+        /// Global access to photos from app scope
+        /// </summary>
+        public List<ImageModel> Photos { get; set; }
     }
 }

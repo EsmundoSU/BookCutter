@@ -1,8 +1,8 @@
 ﻿using Microsoft.Win32;
 using System;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Configuration;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
@@ -17,12 +17,88 @@ namespace BookCutter.Main
         public MainWindow()
         {
             InitializeComponent();
-            SettingsManager.ReadAllSettings();
-            SettingsManager.AddUpdateAppSettings("Moje ustawienie1", "Adam Pelc");
-            SettingsManager.ReadAllSettings();
-            SettingsManager.AddUpdateAppSettings("Moje ustawienie2", "Adam Pelc3");
-            SettingsManager.AddUpdateAppSettings("Moje ustawienie3", "Adam Pelc4");
-            SettingsManager.ReadAllSettings();
+
+            LeftArrowButton.IsEnabled = false;
+            RightArrowButton.IsEnabled = false;
+
+            // Default Settings
+            var configFile = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
+            var settings = configFile.AppSettings.Settings;
+
+            // Default settings
+            if ( settings[SettingsManager.MaskColorKey] == null )
+                SettingsManager.AddUpdateAppSettings(SettingsManager.MaskColorKey, "0");
+            if( settings[SettingsManager.AntiAliasingKey] == null )
+                SettingsManager.AddUpdateAppSettings(SettingsManager.AntiAliasingKey, false.ToString());
+            if(settings[SettingsManager.UpTresholdKey] == null)
+                SettingsManager.AddUpdateAppSettings(SettingsManager.UpTresholdKey, "150");
+            if (settings[SettingsManager.DownTresholdKey] == null)
+                SettingsManager.AddUpdateAppSettings(SettingsManager.DownTresholdKey, "20");
+            if (settings[SettingsManager.GaussianSizeKey] == null)
+                SettingsManager.AddUpdateAppSettings(SettingsManager.GaussianSizeKey, "3");
+            if (settings[SettingsManager.PhotoModeLoadKey] == null)
+                SettingsManager.AddUpdateAppSettings(SettingsManager.PhotoModeLoadKey, "0");
+
+            // Setting default photo load mode
+            Int32.TryParse(settings[SettingsManager.PhotoModeLoadKey].Value, out int photoModeLoad);
+            switch ((PhotoModeLoad)photoModeLoad)
+            {
+                case PhotoModeLoad.Single:
+                    SinglePhotoRadioButton.IsChecked = true;
+                    OpenFolderButton.IsEnabled = false;
+                    SavePhotosButton.IsEnabled = false;
+                    OpenPhotoButton.IsEnabled = true;
+                    SavePhotoButton.IsEnabled = true;
+                    break;
+                case PhotoModeLoad.Multiple:
+                    MultiplePhotosRadiobutton.IsChecked = true;
+                    OpenFolderButton.IsEnabled = true;
+                    SavePhotosButton.IsEnabled = true;
+                    OpenPhotoButton.IsEnabled = false;
+                    SavePhotoButton.IsEnabled = false;
+                    break;
+                default:
+                    SinglePhotoRadioButton.IsChecked = true;
+                    break;
+            }
+
+            // Setting default mask radioboxes values
+            Int32.TryParse(settings[SettingsManager.MaskColorKey].Value, out int maskColor);
+            switch ((ColorScale)maskColor)
+            {
+                case ColorScale.Gray:
+                    GrayMaskRadioButton.IsChecked = true;
+                    break;
+                case ColorScale.Red:
+                    RedMaskRadioButton.IsChecked = true;
+                    break;
+                case ColorScale.Green:
+                    GreenMaskRadioButton.IsChecked = true;
+                    break;
+                case ColorScale.Blue:
+                    BlueMaskRadioButton.IsChecked = true;
+                    break;
+                default:
+                    GrayMaskRadioButton.IsChecked = true;
+                    break;
+            }
+
+            // Seting default AntiAliasing checkbox value
+            var antiAliasingParam = settings[SettingsManager.AntiAliasingKey].Value;
+            bool.TryParse(antiAliasingParam, out bool antiAliasingIsChecked);
+            AntialiasingCheckBox.IsChecked = antiAliasingIsChecked;
+
+            // Setting default UpTreshold slider value
+            Int32.TryParse(settings[SettingsManager.UpTresholdKey].Value, out int upTresholdValue);
+            UpTresholdSlider.Value = upTresholdValue;
+
+            // Setting default DownTreshold slider value
+            Int32.TryParse(settings[SettingsManager.DownTresholdKey].Value, out int downTresholdValue);
+            DownTresholdSlider.Value = downTresholdValue;
+
+            // Seting default Gaussian size slider value
+            Int32.TryParse(settings[SettingsManager.GaussianSizeKey].Value, out int gaussianSize);
+            GaussianSlider.Value = gaussianSize;
         }
 
         /// <summary>
@@ -33,6 +109,7 @@ namespace BookCutter.Main
         private void OpenPhotoButton_Click(object sender, RoutedEventArgs e)
         {
             OpenFileDialog openFileDialog = new OpenFileDialog();
+
             if(openFileDialog.ShowDialog() == true )
             {
                 // Load basic image
@@ -68,67 +145,30 @@ namespace BookCutter.Main
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void MultiplePhotosRadiobutton_Click(object sender, RoutedEventArgs e)
-        {
-            OpenPhotoButton.IsEnabled = false;
-            SavePhotoButton.IsEnabled = false;
-
-            OpenFolderButton.IsEnabled = true;
-            SavePhotosButton.IsEnabled = true;
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void OpenFolderButton_Click(object sender, RoutedEventArgs e)
-        {
-            var openFolderDialog = new System.Windows.Forms.FolderBrowserDialog();
-            if(openFolderDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
-            {
-                var photosPathList = Directory.GetFiles(openFolderDialog.SelectedPath, "*.jpg").ToList();
-
-                foreach (var photoPath in photosPathList)
-                {
-                    // Load basic image
-                    var imageBasicUri = new Uri(photoPath);
-                    BasicPhotoImage.Source = new BitmapImage(imageBasicUri);
-
-                    // Convert and load mask of photo
-                    var imageMaskMat = PhotoProcessing.FindBookMask(photoPath, (int)UpTresholdSlider.Value, (int)DownTresholdSlider.Value, (int)GaussianSlider.Value, ColorScale.Gray);
-                    MaskPhotoImage.Source = PhotoProcessing.MatToImageSource(imageMaskMat);
-
-                    // Cut mask form original photo
-                    var imageCutted = PhotoProcessing.CutBookCV(photoPath, imageMaskMat, (bool)AntialiasingCheckBox.IsChecked);
-                    CuttedPhotoImage.Source = PhotoProcessing.MatToImageSource(imageCutted);
-                }
-            }
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
         private void UpTresholdSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
             if(BasicPhotoImage != null)
             {
-                var basicImageImageSource = BasicPhotoImage.Source;
-                var basicImageUri = new Uri(basicImageImageSource.ToString());
-                var basicImagePath = basicImageUri.AbsolutePath;
+                if(BasicPhotoImage.ActualHeight > 0 )
+                {
+                    var basicImageImageSource = BasicPhotoImage.Source;
+                    var basicImageUri = new Uri(basicImageImageSource.ToString());
+                    var basicImagePath = basicImageUri.AbsolutePath;
 
-                var downTresholdValue = (int)DownTresholdSlider.Value;
-                var gaussianSizeValue = (int)GaussianSlider.Value;
+                    var downTresholdValue = (int)DownTresholdSlider.Value;
+                    var gaussianSizeValue = (int)GaussianSlider.Value;
 
 
-                var maskImageMat = PhotoProcessing.FindBookMask(basicImagePath, (int)e.NewValue, downTresholdValue, gaussianSizeValue, ColorScale.Gray);
-                MaskPhotoImage.Source = PhotoProcessing.MatToImageSource(maskImageMat);
+                    var maskImageMat = PhotoProcessing.FindBookMask(basicImagePath, (int)e.NewValue, downTresholdValue, gaussianSizeValue, ColorScale.Gray);
+                    MaskPhotoImage.Source = PhotoProcessing.MatToImageSource(maskImageMat);
 
-                var imageCutted = PhotoProcessing.CutBookCV(basicImagePath, maskImageMat, (bool)AntialiasingCheckBox.IsChecked);
-                CuttedPhotoImage.Source = PhotoProcessing.MatToImageSource(imageCutted);
+                    var imageCutted = PhotoProcessing.CutBookCV(basicImagePath, maskImageMat, (bool)AntialiasingCheckBox.IsChecked);
+                    CuttedPhotoImage.Source = PhotoProcessing.MatToImageSource(imageCutted);
+                }
             }
+
+            // Update app settings with new value
+            SettingsManager.AddUpdateAppSettings(SettingsManager.UpTresholdKey, e.NewValue.ToString());
         }
 
         /// <summary>
@@ -140,19 +180,25 @@ namespace BookCutter.Main
         {
             if (BasicPhotoImage != null)
             {
-                var basicImageImageSource = BasicPhotoImage.Source;
-                var basicImageUri = new Uri(basicImageImageSource.ToString());
-                var basicImagePath = basicImageUri.AbsolutePath;
+                if( BasicPhotoImage.ActualHeight > 0 )
+                {
+                    var basicImageImageSource = BasicPhotoImage.Source;
+                    var basicImageUri = new Uri(basicImageImageSource.ToString());
+                    var basicImagePath = basicImageUri.AbsolutePath;
 
-                var upTresholdValue = (int)UpTresholdSlider.Value;
-                var gaussianSizeValue = (int)GaussianSlider.Value;
+                    var upTresholdValue = (int)UpTresholdSlider.Value;
+                    var gaussianSizeValue = (int)GaussianSlider.Value;
 
-                var maskImageMat = PhotoProcessing.FindBookMask(basicImagePath, upTresholdValue, (int)e.NewValue, gaussianSizeValue, ColorScale.Gray);
-                MaskPhotoImage.Source = PhotoProcessing.MatToImageSource(maskImageMat);
+                    var maskImageMat = PhotoProcessing.FindBookMask(basicImagePath, upTresholdValue, (int)e.NewValue, gaussianSizeValue, ColorScale.Gray);
+                    MaskPhotoImage.Source = PhotoProcessing.MatToImageSource(maskImageMat);
 
-                var imageCutted = PhotoProcessing.CutBookCV(basicImagePath, maskImageMat, (bool)AntialiasingCheckBox.IsChecked);
-                CuttedPhotoImage.Source = PhotoProcessing.MatToImageSource(imageCutted);
+                    var imageCutted = PhotoProcessing.CutBookCV(basicImagePath, maskImageMat, (bool)AntialiasingCheckBox.IsChecked);
+                    CuttedPhotoImage.Source = PhotoProcessing.MatToImageSource(imageCutted);
+                }
             }
+            
+            // Update app settings with new value
+            SettingsManager.AddUpdateAppSettings(SettingsManager.DownTresholdKey, e.NewValue.ToString());
         }
 
         /// <summary>
@@ -164,18 +210,24 @@ namespace BookCutter.Main
         {
             if (BasicPhotoImage != null)
             {
-                var basicImageImageSource = BasicPhotoImage.Source;
-                var basicImageUri = new Uri(basicImageImageSource.ToString());
-                var basicImagePath = basicImageUri.AbsolutePath;
+                if( BasicPhotoImage.ActualHeight > 0 )
+                {
+                    var basicImageImageSource = BasicPhotoImage.Source;
+                    var basicImageUri = new Uri(basicImageImageSource.ToString());
+                    var basicImagePath = basicImageUri.AbsolutePath;
 
-                var upTresholdValue = (int)UpTresholdSlider.Value;
-                var downTresholdValue = (int)DownTresholdSlider.Value;
+                    var upTresholdValue = (int)UpTresholdSlider.Value;
+                    var downTresholdValue = (int)DownTresholdSlider.Value;
 
-                var maskImageMat = PhotoProcessing.FindBookMask(basicImagePath, upTresholdValue, downTresholdValue, (int)e.NewValue, ColorScale.Gray);
-                MaskPhotoImage.Source = PhotoProcessing.MatToImageSource(maskImageMat);
+                    var maskImageMat = PhotoProcessing.FindBookMask(basicImagePath, upTresholdValue, downTresholdValue, (int)e.NewValue, ColorScale.Gray);
+                    MaskPhotoImage.Source = PhotoProcessing.MatToImageSource(maskImageMat);
 
-                var imageCutted = PhotoProcessing.CutBookCV(basicImagePath, maskImageMat, (bool)AntialiasingCheckBox.IsChecked);
-                CuttedPhotoImage.Source = PhotoProcessing.MatToImageSource(imageCutted);
+                    var imageCutted = PhotoProcessing.CutBookCV(basicImagePath, maskImageMat, (bool)AntialiasingCheckBox.IsChecked);
+                    CuttedPhotoImage.Source = PhotoProcessing.MatToImageSource(imageCutted);
+                }
+
+                // Update app settings with new value
+                SettingsManager.AddUpdateAppSettings(SettingsManager.GaussianSizeKey, e.NewValue.ToString());
             }
         }
 
@@ -222,42 +274,48 @@ namespace BookCutter.Main
         /// <param name="e"></param>
         private void RadioButton_Checked(object sender, RoutedEventArgs e)
         {
-            if(BasicPhotoImage != null)
+            var radioButton = (RadioButton)e.Source;
+
+            ColorScale colorScale;
+
+            if (radioButton == GrayMaskRadioButton)
             {
-                var basicImageImageSource = BasicPhotoImage.Source;
-                var basicImageUri = new Uri(basicImageImageSource.ToString());
-                var basicImagePath = basicImageUri.AbsolutePath;
+                colorScale = ColorScale.Gray;   
+            }
+            else if (radioButton == RedMaskRadioButton)
+            {
+                colorScale = ColorScale.Red;
+            }
+            else if (radioButton == GreenMaskRadioButton)
+            {
+                colorScale = ColorScale.Green;
+            }
+            else
+            {
+                colorScale = ColorScale.Blue;
+            }
 
-                var upTresholdValue = (int)UpTresholdSlider.Value;
-                var downTresholdValue = (int)DownTresholdSlider.Value;
-                var gaussianSizeValue = (int)GaussianSlider.Value;
+            // Update app settings for color mask
+            SettingsManager.AddUpdateAppSettings(SettingsManager.MaskColorKey, ((int)colorScale).ToString());
 
-                var radioButton = (RadioButton)e.Source;
-
-                ColorScale colorScale;
-
-                if( radioButton == GrayMaskRadioButton )
+            if (BasicPhotoImage != null)
+            {
+                if(BasicPhotoImage.ActualHeight > 0 )
                 {
-                    colorScale = ColorScale.Gray;
-                }
-                else if( radioButton == RedMaskRadioButton )
-                {
-                    colorScale = ColorScale.Red;
-                }
-                else if( radioButton == GreenMaskRadioButton )
-                {
-                    colorScale = ColorScale.Green;
-                }
-                else
-                {
-                    colorScale = ColorScale.Blue;
-                }
+                    var basicImageImageSource = BasicPhotoImage.Source;
+                    var basicImageUri = new Uri(basicImageImageSource.ToString());
+                    var basicImagePath = basicImageUri.AbsolutePath;
 
-                var maskImageMat = PhotoProcessing.FindBookMask(basicImagePath, upTresholdValue, downTresholdValue, gaussianSizeValue, colorScale);
-                MaskPhotoImage.Source = PhotoProcessing.MatToImageSource(maskImageMat);
+                    var upTresholdValue = (int)UpTresholdSlider.Value;
+                    var downTresholdValue = (int)DownTresholdSlider.Value;
+                    var gaussianSizeValue = (int)GaussianSlider.Value;
 
-                var imageCutted = PhotoProcessing.CutBookCV(basicImagePath, maskImageMat, (bool)AntialiasingCheckBox.IsChecked);
-                CuttedPhotoImage.Source = PhotoProcessing.MatToImageSource(imageCutted);
+                    var maskImageMat = PhotoProcessing.FindBookMask(basicImagePath, upTresholdValue, downTresholdValue, gaussianSizeValue, colorScale);
+                    MaskPhotoImage.Source = PhotoProcessing.MatToImageSource(maskImageMat);
+
+                    var imageCutted = PhotoProcessing.CutBookCV(basicImagePath, maskImageMat, (bool)AntialiasingCheckBox.IsChecked);
+                    CuttedPhotoImage.Source = PhotoProcessing.MatToImageSource(imageCutted);
+                }
             }
         }
 
@@ -294,8 +352,50 @@ namespace BookCutter.Main
 
                 var imageCutted = PhotoProcessing.CutBookCV(basicImagePath, maskImageMat, (bool)AntialiasingCheckBox.IsChecked);
                 CuttedPhotoImage.Source = PhotoProcessing.MatToImageSource(imageCutted);
-
             }
+
+            SettingsManager.AddUpdateAppSettings(SettingsManager.AntiAliasingKey, ((bool)AntialiasingCheckBox.IsChecked).ToString());
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void PhotoModeRadioButton_Click(object sender, RoutedEventArgs e)
+        {
+            var radioButton = (RadioButton)e.Source;
+
+            PhotoModeLoad photoModeLoad = 0;
+
+            if(radioButton == SinglePhotoRadioButton)
+            {
+                photoModeLoad = PhotoModeLoad.Single;
+                OpenFolderButton.IsEnabled = false;
+                SavePhotosButton.IsEnabled = false;
+                OpenPhotoButton.IsEnabled = true;
+                SavePhotoButton.IsEnabled = true;
+            }
+            else if( radioButton == MultiplePhotosRadiobutton)
+            {
+                photoModeLoad = PhotoModeLoad.Multiple;
+                OpenFolderButton.IsEnabled = true;
+                SavePhotosButton.IsEnabled = true;
+                OpenPhotoButton.IsEnabled = false;
+                SavePhotoButton.IsEnabled = false;
+            }
+
+            SettingsManager.AddUpdateAppSettings(SettingsManager.PhotoModeLoadKey, ((int)photoModeLoad).ToString());
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void OpenFolderButton_Click(object sender, RoutedEventArgs e)
+        {
+
         }
     }
 }

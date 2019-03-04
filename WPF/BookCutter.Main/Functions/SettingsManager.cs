@@ -4,9 +4,42 @@ using System;
 
 namespace BookCutter.Main
 {
-    internal static class SettingsManager
+    public static class SettingsManager
     {
-        internal static void ReadAllSettings()
+        /// <summary>
+        /// 
+        /// </summary>
+        public static string MaskColorKey { get { return "MaskColor"; } }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public static string AntiAliasingKey { get { return "AntiAliasing"; } }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public static string UpTresholdKey { get { return "UpTreshold"; } }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public static string DownTresholdKey { get { return "DownTreshold"; } }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public static string GaussianSizeKey { get { return "GaussianSize"; } }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public static string PhotoModeLoadKey { get { return "PhotoModeLoad"; } }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public static void ReadAllSettings()
         {
             try
             {
@@ -30,7 +63,21 @@ namespace BookCutter.Main
             }
         }
 
-        internal static void AddUpdateAppSettings(string key, string value)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public static int ReadAmoutOfSettings()
+        {
+            return ConfigurationManager.AppSettings.Count;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
+        public static void AddUpdateAppSettings(string key, string value)
         {
             try
             {
