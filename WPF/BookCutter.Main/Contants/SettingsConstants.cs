@@ -10,7 +10,12 @@
         /// <summary>
         /// 
         /// </summary>
-        public static string MaskColorValue { get { return ((int)ColorScale.Gray).ToString(); } }
+        public static MaskColorScale MaskColorValue { get { return MaskColorScale.Gray; } }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public static string MaskColorValueString { get { return ((int)MaskColorValue).ToString(); } }
 
         /// <summary>
         /// 
@@ -20,7 +25,12 @@
         /// <summary>
         /// 
         /// </summary>
-        public static string AntiAliasingValue { get { return false.ToString(); } }
+        public static bool AntiAliasingValue { get { return false; } }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public static string AntiAliasingValueString { get { return AntiAliasingValue.ToString(); } }
 
         /// <summary>
         /// 
@@ -30,7 +40,12 @@
         /// <summary>
         /// 
         /// </summary>
-        public static string UpTresholdValue { get { return "150"; } }
+        public static int UpTresholdValue { get { return 150; } }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public static string UpTresholdValueString { get { return UpTresholdValue.ToString(); } }
 
         /// <summary>
         /// 
@@ -40,7 +55,12 @@
         /// <summary>
         /// 
         /// </summary>
-        public static string DownTresholdValue { get { return "20"; } }
+        public static int DownTresholdValue { get { return 20; } }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public static string DownTresholdValueString { get { return DownTresholdValue.ToString(); } }
 
         /// <summary>
         /// 
@@ -50,6 +70,26 @@
         /// <summary>
         /// 
         /// </summary>
+        public static int GaussianSizeValue { get { return 3; } }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public static string GaussianSizeValueString { get { return GaussianSizeValue.ToString(); } }
+
+        /// <summary>
+        /// 
+        /// </summary>
         public static string PhotoModeLoadKey { get { return "PhotoModeLoad"; } }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public static PhotoModeLoad PhotoModeLoadValue { get { return PhotoModeLoad.Single; } }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public static string PhotoModeLoadValueString { get { return ((int)PhotoModeLoadValue).ToString(); } }
     }
 }

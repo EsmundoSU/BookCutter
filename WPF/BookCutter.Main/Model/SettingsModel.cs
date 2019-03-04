@@ -10,7 +10,7 @@
         /// <summary>
         /// Select which color scale photo should be processed with
         /// </summary>
-        public ColorScale ColorScale { get; set; }
+        public MaskColorScale MaskColor { get; set; }
 
         /// <summary>
         /// Indicates if antiAliasing option for photo is turned On/Off

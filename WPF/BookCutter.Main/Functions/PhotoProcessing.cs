@@ -21,7 +21,7 @@ namespace BookCutter.Main
         /// </summary>
         /// <param name="filePath"></param>
         /// <returns></returns>
-        internal static Mat FindBookMask(string filePath, int upTreshold, int downTreshold, int gaussianSize, ColorScale colorScale)
+        internal static Mat FindBookMask(string filePath, int upTreshold, int downTreshold, int gaussianSize, MaskColorScale colorScale)
         {
             var imgBasic = Cv2.ImRead(filePath);
             //Cv2.ImShow("Debug(CV2) - Basic Image", imgBasic);

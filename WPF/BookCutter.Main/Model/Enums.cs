@@ -3,7 +3,7 @@
     /// <summary>
     /// Color scale to select from
     /// </summary>
-    public enum ColorScale
+    public enum MaskColorScale
     {
         Gray,
         Red,
