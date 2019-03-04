@@ -85,7 +85,8 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Functions\Enums.cs" />
+    <Compile Include="Contants\SettingsConstants.cs" />
+    <Compile Include="Model\Enums.cs" />
     <Compile Include="Functions\PhotoProcessing.cs" />
     <Compile Include="Functions\SettingsManager.cs" />
     <Compile Include="MainWindow.xaml.cs">
@@ -95,7 +96,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Model\ImageModel.cs" />
-    <Compile Include="Model\ImageParametersModel.cs" />
+    <Compile Include="Model\SettingsModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>

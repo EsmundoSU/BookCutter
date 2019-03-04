@@ -40,6 +40,11 @@
         /// <summary>
         /// 
         /// </summary>
+        public static string DownTresholdValue { get { return "20"; } }
+
+        /// <summary>
+        /// 
+        /// </summary>
         public static string GaussianSizeKey { get { return "GaussianSize"; } }
 
         /// <summary>
