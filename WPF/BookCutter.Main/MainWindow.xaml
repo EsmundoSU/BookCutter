@@ -53,8 +53,10 @@
                 Grid.Row="2"
                 Grid.ColumnSpan="3"
                 Grid.RowSpan="2"
-                Background="Red"
-                Content="Info Label: INFO HERE..."/>
+                Name="InfoLabel"
+                BorderThickness="2"
+                BorderBrush="LightGray"
+                Content="Info Label:"/>
 
             <ProgressBar
                 Grid.Row="4"
@@ -74,7 +76,8 @@
                 Grid.Column="1"
                 Grid.Row="1"
                 Content="Open Folder..."
-                Name="OpenFolderButton" Click="OpenFolderButton_Click"/>
+                Name="OpenFolderButton" 
+                Click="OpenFolderButton_Click"/>
 
             <Button
                 Grid.Column="2"
@@ -89,15 +92,52 @@
                 Name="SavePhotosButton"/>
             
             <!-- Temporary spacing label -->
-            <Label
+            <StackPanel
                 Grid.Column="3"
-                Grid.RowSpan="4"
-                Background="AliceBlue"
-                Content="SPACING LABEL" />
+                Grid.RowSpan="4">
+                
+                <!-- Mask Color Label-->
+                <Label
+                    Content="Mask color:"/>
+                
+                <!-- Gray Scale RadioButton -->
+                <RadioButton
+                    GroupName="MaskColorRadioButtonGroup"
+                    Name="GrayMaskRadioButton"
+                    Content="Gray scale"
+                    IsChecked="True"
+                    Checked="RadioButton_Checked"/>
 
-            <Label
+                <!-- Red Scale RadioButton -->
+                <RadioButton
+                    GroupName="MaskColorRadioButtonGroup"
+                    Name="RedMaskRadioButton"
+                    Content="Red scale"
+                    Checked="RadioButton_Checked"/>
+
+                <!-- Green Scale RadioButton -->
+                <RadioButton
+                    GroupName="MaskColorRadioButtonGroup"
+                    Name="GreenMaskRadioButton"
+                    Content="Green scale"
+                    Checked="RadioButton_Checked"/>
+
+                <!-- Blue Scale RadioButton -->
+                <RadioButton
+                    GroupName="MaskColorRadioButtonGroup"
+                    Name="BlueMaskRadioButton"
+                    Content="Blue scale"
+                    Checked="RadioButton_Checked"/>
+
+            </StackPanel>
+
+            <CheckBox
                 Grid.Column="4"
-                Content="Parameters Setup:"/>
+                Grid.ColumnSpan="2"
+                Name="AntialiasingCheckBox"
+                Content="Anty-Aliasing ( On / Off )"
+                Checked="AntialiasingCheckBox_Change"
+                Unchecked="AntialiasingCheckBox_Change"/>
 
             <Label
                 Grid.Column="4"
@@ -113,10 +153,6 @@
                 Grid.Column="4"
                 Grid.Row="3"
                 Content="Gaussian:"/>
-
-            <Button
-                Grid.Column="5"
-                Content="Save Parameters"/>
 
             <!-- Upper Treshold Slider -->
             <DockPanel 
@@ -204,7 +240,6 @@
                 Source="D:\ape\Documents\Moje\Software\BookCutter\photos\book_2.jpg"
                 Name="CuttedPhotoImage"/>
             <!-- TODO -->
-            
             
         </Grid>
     </Grid>

@@ -85,6 +85,7 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Functions\ColorScale.cs" />
     <Compile Include="Functions\PhotoProcessing.cs" />
     <Compile Include="Functions\SettingsManager.cs" />
     <Compile Include="MainWindow.xaml.cs">

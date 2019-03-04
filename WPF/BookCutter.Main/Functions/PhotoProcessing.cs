@@ -21,13 +21,35 @@ namespace BookCutter.Main
         /// </summary>
         /// <param name="filePath"></param>
         /// <returns></returns>
-        internal static Mat FindBookMask(string filePath, int upTreshold, int downTreshold, int gaussianSize)
+        internal static Mat FindBookMask(string filePath, int upTreshold, int downTreshold, int gaussianSize, ColorScale colorScale)
         {
             var imgBasic = Cv2.ImRead(filePath);
             //Cv2.ImShow("Debug(CV2) - Basic Image", imgBasic);
 
             var imgGray = imgBasic.Clone();
-            Cv2.CvtColor(imgBasic, imgGray, ColorConversionCodes.BGR2GRAY);
+
+            Mat[] imgPlanes = new Mat[3];
+            Cv2.Split(imgBasic, out imgPlanes);
+
+            // Select proper color scale for mask
+            switch (colorScale)
+            {
+                case ColorScale.Gray:
+                    Cv2.CvtColor(imgBasic, imgGray, ColorConversionCodes.BGR2GRAY);
+                    break;
+                case ColorScale.Red:
+                    imgGray = imgPlanes[2];
+                    break;
+                case ColorScale.Green:
+                    imgGray = imgPlanes[1];
+                    break;
+                case ColorScale.Blue:
+                    imgGray = imgPlanes[0];
+                    break;
+                default:
+                    break;
+            }
+
             //Cv2.ImShow("Debug(CV2) - Grey Image", imgGray);
 
             var imgGaussian = imgGray.Clone();
@@ -66,75 +88,7 @@ namespace BookCutter.Main
             return imgContour;
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="imgBasic"></param>
-        /// <returns></returns>
-        internal static Mat FindBookMask(Mat imgBasic, int upTreshold)
-        {
-            var imgGray = imgBasic.Clone();
-            Cv2.CvtColor(imgBasic, imgGray, ColorConversionCodes.BGR2GRAY);
-            //Cv2.ImShow("Debug(CV2) - Grey Image", imgGray);
-
-            var imgGaussian = imgGray.Clone();
-            Cv2.GaussianBlur(imgGray, imgGaussian, new OpenCvSharp.Size(3, 3), 0);
-            //Cv2.ImShow("Debug(CV2) - Gaussian", imgGaussian);
-
-            var imgCanny = imgGaussian.Clone();
-            Cv2.Canny(imgGaussian, imgCanny, upTreshold, 10);
-            //Cv2.ImShow("Debug(CV2) - Canny", imgCanny);
-
-            var imgClosed = imgCanny.Clone();
-            var kernel = Cv2.GetStructuringElement(MorphShapes.Rect, new OpenCvSharp.Size(7, 7));
-            Cv2.MorphologyEx(imgCanny, imgClosed, MorphTypes.Close, kernel);
-            //Cv2.ImShow("Debug(CV2) - Closed", imgClosed);
-
-            OpenCvSharp.Point[][] contours;
-            HierarchyIndex[] hierarchyIndexes;
-            Cv2.FindContours(imgClosed, out contours, out hierarchyIndexes, RetrievalModes.List, ContourApproximationModes.ApproxSimple);
-
-            var contourMaxArea = 0.0;
-            var contourMaxIndex = 0;
-            for (int i = 0; i < contours.Length; i++)
-            {
-                var contour = contours[i];
-                if (Cv2.ContourArea(contour) > contourMaxArea)
-                {
-                    contourMaxArea = Cv2.ContourArea(contour);
-                    contourMaxIndex = i;
-                }
-            }
-
-            var imgContour = (Mat)Mat.Zeros(imgClosed.Size(), MatType.CV_8UC1);
-            Cv2.DrawContours(imgContour, contours, contourMaxIndex, new Scalar(255), -1);
-            //Cv2.ImShow("Debig(CV2) - Counters", imgContour);
-
-            return imgContour;
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="sourceImageFilePath"></param>
-        /// <param name="imageMaskMat"></param>
-        /// <returns></returns>
-        internal static Mat CutBook(string sourceImageFilePath, Mat imageMaskMat)
-        {
-            var imageBasicMat = Cv2.ImRead(sourceImageFilePath);
-            for (int i = 0; i < imageBasicMat.Cols; i++)
-            {
-                for (int j = 0; j < imageBasicMat.Rows; j++)
-                {
-                    if (imageMaskMat.At<Vec3b>(j, i)[0] == 0)
-                        imageBasicMat.Set(j, i, new Vec3b(255, 255, 255));
-                }
-            }
-
-            return imageBasicMat;
-        }
-
-        internal static Mat CutBookCV(string sourceImageFilePath, Mat imageMask)
+        internal static Mat CutBookCV(string sourceImageFilePath, Mat imageMask, bool antialiasing = false)
         {
             var imageBasic = Cv2.ImRead(sourceImageFilePath);
 
@@ -152,6 +106,10 @@ namespace BookCutter.Main
 
             var imgFinal = (Mat)Mat.Zeros(imageBasic.Size(), MatType.CV_8UC3);
             Cv2.BitwiseOr(imageForeground, imgBackgroundMask, imgFinal);
+
+            if (antialiasing == true)
+                Cv2.GaussianBlur(imgFinal, imgFinal, new OpenCvSharp.Size(3, 3), 0);
+
             return imgFinal;
         }
 
