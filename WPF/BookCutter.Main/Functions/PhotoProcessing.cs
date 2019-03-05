@@ -34,16 +34,16 @@ namespace BookCutter.Main
             // Select proper color scale for mask
             switch (colorScale)
             {
-                case ColorScale.Gray:
+                case MaskColorScale.Gray:
                     Cv2.CvtColor(imgBasic, imgGray, ColorConversionCodes.BGR2GRAY);
                     break;
-                case ColorScale.Red:
+                case MaskColorScale.Red:
                     imgGray = imgPlanes[2];
                     break;
-                case ColorScale.Green:
+                case MaskColorScale.Green:
                     imgGray = imgPlanes[1];
                     break;
-                case ColorScale.Blue:
+                case MaskColorScale.Blue:
                     imgGray = imgPlanes[0];
                     break;
                 default:

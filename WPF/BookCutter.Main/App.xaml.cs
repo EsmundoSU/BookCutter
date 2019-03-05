@@ -14,6 +14,11 @@ namespace BookCutter.Main
         public List<ImageModel> Images { get; set; }
 
         /// <summary>
+        /// Indicates which image is now processing
+        /// </summary>
+        public int SelectedImage { get; set; }
+
+        /// <summary>
         /// Global access to app setting from app scope
         /// </summary>
         public SettingsModel Settings { get; set; }

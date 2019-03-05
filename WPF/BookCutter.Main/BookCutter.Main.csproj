@@ -86,6 +86,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Contants\SettingsConstants.cs" />
+    <Compile Include="Functions\ImagesManager.cs" />
     <Compile Include="Model\Enums.cs" />
     <Compile Include="Functions\PhotoProcessing.cs" />
     <Compile Include="Functions\SettingsManager.cs" />

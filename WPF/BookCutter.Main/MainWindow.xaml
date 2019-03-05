@@ -169,7 +169,7 @@
                     Minimum="0"
                     TickFrequency="1"
                     IsSnapToTickEnabled="True"
-                    ValueChanged="UpTresholdSlider_ValueChanged"/>
+                    ValueChanged="Slider_ValueChanged"/>
             </DockPanel>
 
             <!-- Down Treshold Slider -->
@@ -188,7 +188,7 @@
                     Minimum="0"
                     TickFrequency="1"
                     IsSnapToTickEnabled="True"
-                    ValueChanged="DownTresholdSlider_ValueChanged"/>
+                    ValueChanged="Slider_ValueChanged"/>
             </DockPanel>
 
             <!-- Gaussian Slider -->
@@ -207,7 +207,7 @@
                     Minimum="1"
                     TickFrequency="2"
                     IsSnapToTickEnabled="True"
-                    ValueChanged="GaussianSlider_ValueChanged"/>
+                    ValueChanged="Slider_ValueChanged"/>
             </DockPanel>
 
         </Grid>
@@ -249,7 +249,8 @@
                 IsEnabled="False"
                 Width="50"
                 FontSize="20"
-                FontWeight="Bold"/>
+                FontWeight="Bold"
+                Click="ArrowButton_Click"/>
 
             <Label
                 Name="CurrentPhotoPageLabel"
@@ -277,7 +278,8 @@
                 IsEnabled="False"
                 Width="50"
                 FontSize="20"
-                FontWeight="Bold"/>
+                FontWeight="Bold"
+                Click="ArrowButton_Click"/>
 
 
         </StackPanel>

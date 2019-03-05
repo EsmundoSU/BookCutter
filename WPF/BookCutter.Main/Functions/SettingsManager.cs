@@ -114,7 +114,6 @@ namespace BookCutter.Main
             {
                 Int32.TryParse(settings[SettingsConstants.PhotoModeLoadKey].Value, out int photoModeLoad);
                 ((App)Application.Current).Settings.PhotoModeLoad = (PhotoModeLoad)photoModeLoad;
-
             }
         }
 
