@@ -237,7 +237,15 @@ namespace BookCutter.Main
                 #region Image Processing
                 // Set basic image
                 var imageBasicUri = new Uri(openFileDialog.FileName);
-                BasicPhotoImage.Source = new BitmapImage(imageBasicUri);
+                try
+                {
+                    BasicPhotoImage.Source = new BitmapImage(imageBasicUri);
+                }
+                catch (Exception)
+                {
+                    MessageBox.Show("File has invalid extension or it's corrupted", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
 
                 // Convert and Load mask of photo
                 var imageMaskMat = PhotoProcessing.FindBookMask(

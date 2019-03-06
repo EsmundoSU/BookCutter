@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:BookCutter.Main"
         mc:Ignorable="d"
-        Title="MainWindow" Height="600" Width="800">
+        Title="Book Cutter" Height="600" Width="800">
     <!-- Grid - Main Window -->
     <Grid>
         <!-- Grid Configuration -->
@@ -14,18 +14,19 @@
             <RowDefinition Height="3*"/>
             <RowDefinition Height="50"/>
         </Grid.RowDefinitions>
-        
+
         <!-- Top Grid - Control Panel -->
         <Grid>
-            
+
             <!-- Top Grid Configuration -->
             <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="110"/>
+                <ColumnDefinition Width="90"/>
+                <ColumnDefinition Width="90"/>
                 <ColumnDefinition Width="1*"/>
-                <ColumnDefinition Width="1*"/>
-                <ColumnDefinition Width="1*"/>
-                <ColumnDefinition Width="1*"/>
-                <ColumnDefinition Width="1*"/>
-                <ColumnDefinition Width="1*"/>
+                <ColumnDefinition Width="120"/>
+                <ColumnDefinition Width="90"/>
+                <ColumnDefinition Width="180"/>
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
                 <RowDefinition Height="1*"/>
@@ -34,20 +35,24 @@
                 <RowDefinition Height="1*"/>
                 <RowDefinition Height="1*"/>
             </Grid.RowDefinitions>
-            
+
             <!-- Top Grid Content -->
             <RadioButton 
                 GroupName="PhotoModeRadioButtonGroup" 
                 Name="SinglePhotoRadioButton"
                 Content="Single Photo"
-                Click="PhotoModeRadioButton_Click"/>
+                Click="PhotoModeRadioButton_Click"
+                VerticalAlignment="Center"
+                Margin="4,8"/>
 
             <RadioButton
                 Grid.Row="1"
                 GroupName="PhotoModeRadioButtonGroup"
                 Content="Multiple Photos"
                 Name="MultiplePhotosRadiobutton"
-                Click="PhotoModeRadioButton_Click"/>
+                Click="PhotoModeRadioButton_Click"
+                VerticalAlignment="Center"
+                Margin="4,8"/>
 
             <Label
                 Grid.Row="2"
@@ -56,16 +61,19 @@
                 Name="InfoLabel"
                 BorderThickness="2"
                 BorderBrush="LightGray"
-                Content="Info Label:"/>
+                Content="Info Label:"
+                VerticalAlignment="Center" 
+                Margin="4 4"/>
 
             <ProgressBar
                 Grid.Row="4"
-                Grid.ColumnSpan="6"
+                Grid.ColumnSpan="8"
                 Name="ProcessProgressBar"
                 Minimum="0"
                 Maximum="100"
-                Value="0"/>
-            
+                Value="0"
+                Margin="0 4"/>
+
             <!-- Open single photo button -->
             <Button
                 Grid.Column="1"
@@ -92,74 +100,90 @@
                 Content="Save Photos"
                 Name="SavePhotosButton"
                 Click="SavePhotosButton_Click" />
-            
+
             <!-- Temporary spacing label -->
             <StackPanel
-                Grid.Column="3"
-                Grid.RowSpan="4">
-                
+                Grid.Column="4"
+                Grid.RowSpan="4" Grid.ColumnSpan="2">
+
                 <!-- Mask Color Label-->
                 <Label
-                    Content="Mask color:"/>
-                
+                    Content="Mask color:"
+                    VerticalAlignment="Bottom"
+                    FontFamily="Lato"
+                    FontWeight="DemiBold"/>
+
                 <!-- Gray Scale RadioButton -->
                 <RadioButton
                     GroupName="MaskColorRadioButtonGroup"
                     Name="GrayMaskRadioButton"
                     Content="Gray scale"
-                    Checked="RadioButton_Checked"/>
+                    Checked="RadioButton_Checked"
+                    Margin="4 2"/>
 
                 <!-- Red Scale RadioButton -->
                 <RadioButton
                     GroupName="MaskColorRadioButtonGroup"
                     Name="RedMaskRadioButton"
                     Content="Red scale"
-                    Checked="RadioButton_Checked"/>
+                    Checked="RadioButton_Checked"
+                    Margin="4 2"/>
 
                 <!-- Green Scale RadioButton -->
                 <RadioButton
                     GroupName="MaskColorRadioButtonGroup"
                     Name="GreenMaskRadioButton"
                     Content="Green scale"
-                    Checked="RadioButton_Checked"/>
+                    Checked="RadioButton_Checked"
+                    Margin="4 2"/>
 
                 <!-- Blue Scale RadioButton -->
                 <RadioButton
                     GroupName="MaskColorRadioButtonGroup"
                     Name="BlueMaskRadioButton"
                     Content="Blue scale"
-                    Checked="RadioButton_Checked"/>
+                    Checked="RadioButton_Checked"
+                    Margin="4 2"/>
 
             </StackPanel>
 
             <CheckBox
-                Grid.Column="4"
+                Grid.Column="5"
                 Grid.ColumnSpan="2"
                 Name="AntialiasingCheckBox"
-                Content="Anty-Aliasing ( On / Off )"
+                Content="Antialiasing ( On / Off )"
                 Checked="AntialiasingCheckBox_Change"
-                Unchecked="AntialiasingCheckBox_Change"/>
+                Unchecked="AntialiasingCheckBox_Change"
+                VerticalAlignment="Center"
+                HorizontalAlignment="Center"/>
 
             <Label
-                Grid.Column="4"
+                Grid.Column="5"
                 Grid.Row="1"
-                Content="UpTreshold:"/>
+                Content="UpTreshold:"
+                VerticalAlignment="Center"
+                HorizontalAlignment="Right"/>
 
             <Label
-                Grid.Column="4"
+                Grid.Column="5"
                 Grid.Row="2"
-                Content="DownTreshold:"/>
+                Content="DownTreshold:"
+                VerticalAlignment="Center"
+                HorizontalAlignment="Right"/>
 
             <Label
-                Grid.Column="4"
+                Grid.Column="5"
                 Grid.Row="3"
-                Content="Gaussian:"/>
+                Content="Gaussian:"
+                VerticalAlignment="Center"
+                HorizontalAlignment="Right"/>
 
             <!-- Upper Treshold Slider -->
             <DockPanel 
                 VerticalAlignment="Center"
-                Grid.Column="5"
-                Grid.Row="1">
+                Grid.Column="6"
+                Grid.Row="1" 
+                Margin="4,6">
                 <TextBox 
                     Text="{Binding ElementName=UpTresholdSlider, Path=Value, UpdateSourceTrigger=PropertyChanged}"
                     DockPanel.Dock="Right"
@@ -177,8 +201,9 @@
             <!-- Down Treshold Slider -->
             <DockPanel 
                 VerticalAlignment="Center"
-                Grid.Column="5"
-                Grid.Row="2">
+                Grid.Column="6"
+                Grid.Row="2" 
+                Margin="4,6">
                 <TextBox 
                     Text="{Binding ElementName=DownTresholdSlider, Path=Value, UpdateSourceTrigger=PropertyChanged}"
                     DockPanel.Dock="Right"
@@ -196,8 +221,9 @@
             <!-- Gaussian Slider -->
             <DockPanel 
                 VerticalAlignment="Center"
-                Grid.Column="5"
-                Grid.Row="3">
+                Grid.Column="6"
+                Grid.Row="3" 
+                Margin="4,6">
                 <TextBox 
                     Text="{Binding ElementName=GaussianSlider, Path=Value, UpdateSourceTrigger=PropertyChanged}"
                     DockPanel.Dock="Right"
@@ -213,7 +239,7 @@
             </DockPanel>
 
         </Grid>
-        
+
         <!-- Bottom Grid - Photos -->
         <Grid Grid.Row="1">
             <!-- Bottom Grid Configuration -->
@@ -222,7 +248,7 @@
                 <ColumnDefinition Width="1*"/>
                 <ColumnDefinition Width="1*"/>
             </Grid.ColumnDefinitions>
-            
+
             <!-- Bottom Grid Content -->
             <Image
                 Source="D:\ape\Documents\Moje\Software\BookCutter\photos\book_1.jpg"
@@ -238,7 +264,7 @@
                 Source="D:\ape\Documents\Moje\Software\BookCutter\photos\book_2.jpg"
                 Name="CuttedPhotoImage"/>
             <!-- TODO -->
-            
+
         </Grid>
         <StackPanel
             Orientation="Horizontal"
