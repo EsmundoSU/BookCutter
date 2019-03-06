@@ -61,9 +61,10 @@
             <ProgressBar
                 Grid.Row="4"
                 Grid.ColumnSpan="6"
+                Name="ProcessProgressBar"
                 Minimum="0"
                 Maximum="100"
-                Value="68"/>
+                Value="0"/>
             
             <!-- Open single photo button -->
             <Button
@@ -89,7 +90,8 @@
                 Grid.Column="2"
                 Grid.Row="1"
                 Content="Save Photos"
-                Name="SavePhotosButton"/>
+                Name="SavePhotosButton"
+                Click="SavePhotosButton_Click" />
             
             <!-- Temporary spacing label -->
             <StackPanel

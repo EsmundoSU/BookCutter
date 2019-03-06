@@ -13,5 +13,10 @@ namespace BookCutter.Main
         /// Store image path
         /// </summary>
         public string ImagePath { get; set; }
+
+        /// <summary>
+        /// Store only name of Image from Path
+        /// </summary>
+        public string ImageName { get; set; }
     }
 }

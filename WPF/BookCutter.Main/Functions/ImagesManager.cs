@@ -1,15 +1,20 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Threading;
 using System.Windows;
+using System.Windows.Media.Imaging;
 
 namespace BookCutter.Main
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public static class ImagesManager
     {
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="path"></param>
         public static void AddImagesFromFolderPath(string path)
         {
             var appCurrent = (App)Application.Current;
@@ -25,7 +30,8 @@ namespace BookCutter.Main
                 appCurrent.Images.Add(new ImageModel
                 {
                     ImagePath = imagePath,
-                    ImageUri = new Uri(imagePath)
+                    ImageUri = new Uri(imagePath),
+                    ImageName = Path.GetFileName(imagePath)
                 });
             }
 
@@ -35,7 +41,8 @@ namespace BookCutter.Main
                 appCurrent.Images.Add(new ImageModel
                 {
                     ImagePath = imagePath,
-                    ImageUri = new Uri(imagePath)
+                    ImageUri = new Uri(imagePath),
+                    ImageName = Path.GetFileName(imagePath)
                 });
             }
 
@@ -45,7 +52,8 @@ namespace BookCutter.Main
                 appCurrent.Images.Add(new ImageModel
                 {
                     ImagePath = imagePath,
-                    ImageUri = new Uri(imagePath)
+                    ImageUri = new Uri(imagePath),
+                    ImageName = Path.GetFileName(imagePath)
                 });
             }
         }

@@ -1,14 +1,12 @@
 ﻿using Microsoft.Win32;
 using System;
 using System.IO;
-using System.Linq;
-using System.Configuration;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
-using System.Diagnostics;
 using System.Collections.Generic;
-
+using System.Threading;
+using System.Windows.Media;
 
 namespace BookCutter.Main
 {
@@ -87,6 +85,134 @@ namespace BookCutter.Main
             #endregion
         }
 
+        #region Private Methods
+        private void ConvertAndSaveImages(string folderPath, App appCurrent)
+        {
+            #region GUI Disable
+            Dispatcher.Invoke(() =>
+            {
+                SinglePhotoRadioButton.IsEnabled = false;
+                MultiplePhotosRadiobutton.IsEnabled = false;
+                OpenPhotoButton.IsEnabled = false;
+                OpenFolderButton.IsEnabled = false;
+                SavePhotoButton.IsEnabled = false;
+                SavePhotosButton.IsEnabled = false;
+                GrayMaskRadioButton.IsEnabled = false;
+                RedMaskRadioButton.IsEnabled = false;
+                GreenMaskRadioButton.IsEnabled = false;
+                BlueMaskRadioButton.IsEnabled = false;
+                AntialiasingCheckBox.IsEnabled = false;
+                UpTresholdSlider.IsEnabled = false;
+                DownTresholdSlider.IsEnabled = false;
+                GaussianSlider.IsEnabled = false;
+
+                LeftArrowButton.IsEnabled = false;
+                RightArrowButton.IsEnabled = false;
+
+                InfoLabel.Content = "Info Label: PROCESSING...";
+            });
+            #endregion
+
+            var photosCount = appCurrent.Images.Count;
+            for (int i = 0; i < photosCount; i++)
+            {
+                #region GUI Change
+                Dispatcher.Invoke(() =>
+                {
+                    CurrentPhotoPageLabel.Content = (i + 1).ToString();
+                    ProcessProgressBar.Value = (i + 1) * 100 / photosCount;
+                });
+                #endregion
+
+                #region Process Photos
+                Dispatcher.Invoke(() =>
+                {
+                    BasicPhotoImage.Source = new BitmapImage(appCurrent.Images[i].ImageUri);
+                });
+
+                //// Convert and load mask of photo
+                var imageMaskMat = PhotoProcessing.FindBookMask(
+                    appCurrent.Images[i].ImagePath,
+                    SettingsManager.GetUpTresholdValue(),
+                    SettingsManager.GetDownTresholdValue(),
+                    SettingsManager.GetGaussianSize(),
+                    SettingsManager.GetMaskColor());
+
+                Dispatcher.Invoke(() =>
+                {
+                    MaskPhotoImage.Source = PhotoProcessing.MatToImageSource(imageMaskMat);
+                });
+
+                //// Cut mask form original photo
+                var imageCutted = PhotoProcessing.CutBookCV(
+                    appCurrent.Images[i].ImagePath,
+                    imageMaskMat,
+                    SettingsManager.GetAntiAliasingState());
+
+                Dispatcher.Invoke(() =>
+                {
+                    CuttedPhotoImage.Source = PhotoProcessing.MatToImageSource(imageCutted);
+                });
+
+                Thread.Sleep(1000);
+                #endregion
+
+                #region Save Image
+                var saveFullPath = folderPath + "//" + appCurrent.Images[i].ImageName;
+                var encoder = new PngBitmapEncoder();
+                BitmapSource imageCuttedImageSource = null;
+
+                Dispatcher.Invoke(() =>
+                {
+                    CuttedPhotoImage.Source.Freeze();
+                    imageCuttedImageSource = (BitmapSource)CuttedPhotoImage.Source;
+                });
+
+                var bitmapFrame = BitmapFrame.Create(imageCuttedImageSource);
+                encoder.Frames.Add(bitmapFrame);
+                using (FileStream stream = new FileStream(saveFullPath, FileMode.Create))
+                {
+                    encoder.Save(stream);
+                }
+                #endregion
+            }
+
+            #region GUI Enable
+            Dispatcher.Invoke(() =>
+            {
+                if( SettingsManager.GetPhotoModeLoad() == PhotoModeLoad.Single)
+                {
+                    
+                    OpenPhotoButton.IsEnabled = true;
+                    SavePhotoButton.IsEnabled = true;
+                }
+                else
+                {
+                    OpenFolderButton.IsEnabled = true;
+                    SavePhotosButton.IsEnabled = true;
+                }
+
+                SinglePhotoRadioButton.IsEnabled = true;
+                MultiplePhotosRadiobutton.IsEnabled = true;
+                GrayMaskRadioButton.IsEnabled = true;
+                RedMaskRadioButton.IsEnabled = true;
+                GreenMaskRadioButton.IsEnabled = true;
+                BlueMaskRadioButton.IsEnabled = true;
+                AntialiasingCheckBox.IsEnabled = true;
+                UpTresholdSlider.IsEnabled = true;
+                DownTresholdSlider.IsEnabled = true;
+                GaussianSlider.IsEnabled = true;
+
+                LeftArrowButton.IsEnabled = true;
+                RightArrowButton.IsEnabled = true;
+
+                InfoLabel.Content = "Info Label:";
+            });
+            #endregion
+        }
+        #endregion
+
+        #region Actions Private Methods
         /// <summary>
         /// 
         /// </summary>
@@ -100,7 +226,7 @@ namespace BookCutter.Main
 
             OpenFileDialog openFileDialog = new OpenFileDialog();
 
-            if(openFileDialog.ShowDialog() == true )
+            if (openFileDialog.ShowDialog() == true)
             {
                 appCurrent.Images.Add(new ImageModel
                 {
@@ -155,13 +281,15 @@ namespace BookCutter.Main
             {
                 ImagesManager.AddImagesFromFolderPath(folderBrowser.SelectedPath);
 
-                // If more than one photo unlock bottom menu
+                #region GUI Change
+                // If more than one image loaded unlock bottom menu
                 if (appCurrent.Images.Count > 1)
                 {
                     RightArrowButton.IsEnabled = true;
                     CurrentPhotoPageLabel.Content = "1";
                     AllPhotosPagesLabel.Content = appCurrent.Images.Count.ToString();
                 }
+                #endregion
 
                 #region Image Processing
                 // Load basic image
@@ -220,6 +348,24 @@ namespace BookCutter.Main
                     }
                 }
             }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void SavePhotosButton_Click(object sender, RoutedEventArgs e)
+        {
+            var appCurrent = (App)Application.Current;
+
+            // Open folder browser
+            var folderBrowser = new System.Windows.Forms.FolderBrowserDialog();
+            if (folderBrowser.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                new Thread(() => ConvertAndSaveImages(folderBrowser.SelectedPath, appCurrent)).Start();
+            }
+
         }
 
         /// <summary>
@@ -380,7 +526,7 @@ namespace BookCutter.Main
             var button = (Button)e.Source;
 
             #region Interface Change
-            if (button.Name == "RightArrowButton" & appCurrent.SelectedImage < appCurrent.Images.Count - 1 )
+            if (button.Name == "RightArrowButton" & appCurrent.SelectedImage < appCurrent.Images.Count - 1)
             {
                 appCurrent.SelectedImage += 1;
                 CurrentPhotoPageLabel.Content = (appCurrent.SelectedImage + 1).ToString();
@@ -423,5 +569,6 @@ namespace BookCutter.Main
             CuttedPhotoImage.Source = PhotoProcessing.MatToImageSource(imageCutted);
             #endregion
         }
+        #endregion
     }
 }

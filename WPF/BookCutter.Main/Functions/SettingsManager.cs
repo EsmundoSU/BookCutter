@@ -31,7 +31,7 @@ namespace BookCutter.Main
             }
             catch (ConfigurationErrorsException)
             {
-                Console.WriteLine("Error writing app settings");
+                Debug.WriteLine("Error writing app settings");
             }
         }
 
